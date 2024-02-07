@@ -6,7 +6,7 @@ app.set("json spaces", 2);
 
 app.get("/cards", getCards);
 
-app.get("/cards/:cardId/:sizeId?", getCardById);
+app.get("/cards/:cardId", getCardById);
 
 //error-handling
 app.use((err, req, res,next) => {

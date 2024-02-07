@@ -1,5 +1,93 @@
 const request = require("supertest");
 const { app } = require("../server");
+const fs = require("fs/promises"); 
+
+afterAll(() => {
+  const originalData = [
+    {
+      "id": "card001",
+      "title": "card 1 title",
+      "sizes": [
+        "sm",
+        "md",
+        "gt"
+      ],
+      "basePrice": 200,
+      "pages": [
+        {
+          "title": "Front Cover",
+          "templateId": "template001"
+        },
+        {
+          "title": "Inside Left",
+          "templateId": "template002"
+        },
+        {
+          "title": "Inside Right",
+          "templateId": "template003"
+        },
+        {
+          "title": "Back Cover",
+          "templateId": "template004"
+        }
+      ]
+    },
+    {
+      "id": "card002",
+      "title": "card 2 title",
+      "sizes": [
+        "md"
+      ],
+      "basePrice": 200,
+      "pages": [
+        {
+          "title": "Front Cover",
+          "templateId": "template005"
+        },
+        {
+          "title": "Inside Left",
+          "templateId": "template002"
+        },
+        {
+          "title": "Inside Right",
+          "templateId": "template003"
+        },
+        {
+          "title": "Back Cover",
+          "templateId": "template004"
+        }
+      ]
+    },
+    {
+      "id": "card003",
+      "title": "card 3 title",
+      "sizes": [
+        "md",
+        "lg"
+      ],
+      "basePrice": 200,
+      "pages": [
+        {
+          "title": "Front Cover",
+          "templateId": "template006"
+        },
+        {
+          "title": "Inside Top",
+          "templateId": "template007"
+        },
+        {
+          "title": "Inside Bottom",
+          "templateId": "template007"
+        },
+        {
+          "title": "Back Cover",
+          "templateId": "template008"
+        }
+      ]
+    }
+  ]
+  fs.writeFile(`${__dirname}/../data/cards.json`, JSON.stringify(originalData, null, 2))
+})
 
 describe("GET /cards", () => {
   test("200 - returns an array of card objects with keys of title, imageURL and card_id", async () => {
@@ -99,3 +187,76 @@ describe("GET /cards/:cardId", () => {
     expect(errMessage).toBe('Invalid Card ID')
   });
 });
+
+describe('POST a card', () => {
+  test('201 - returns correct card object after posting to database', async () => {
+    const newCard = {
+      "title": "example title",
+      "sizes": [
+        "sm",
+        "md",
+        "gt"
+      ],
+      "basePrice": 200,
+      "pages": [
+        {
+          "title": "Front Cover",
+          "templateId": "template001"
+        },
+        {
+          "title": "Inside Left",
+          "templateId": "template002"
+        },
+        {
+          "title": "Inside Right",
+          "templateId": "template003"
+        },
+        {
+          "title": "Back Cover",
+          "templateId": "template004"
+        }
+      ]
+    }
+    const response = await request(app).post('/cards').send(newCard)
+
+    expect(response.status).toBe(201)
+    expect(cardData).toMatchObject({
+      title: "example title",
+      imageUrl: "/front-cover-portrait-1.jpg",
+      card_id: "card004",
+      base_price: 200,
+      availableSizes: [
+        {
+          id: "sm",
+          title: "Small",
+        },
+        {
+          id: "md",
+          title: "Medium",
+        },
+        {
+          id: "gt",
+          title: "Giant",
+        },
+      ],
+      pages: [
+        {
+          title: "Front Cover",
+          templateId: "template001",
+        },
+        {
+          title: "Inside Left",
+          templateId: "template002",
+        },
+        {
+          title: "Inside Right",
+          templateId: "template003",
+        },
+        {
+          title: "Back Cover",
+          templateId: "template004",
+        },
+      ],
+    });
+  })
+}) 
