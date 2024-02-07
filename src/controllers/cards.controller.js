@@ -6,9 +6,9 @@ exports.getCards = (req, res) => {
   });
 };
 
-exports.getCardById = (req, res) => {
+exports.getCardById = (req, res, next) => {
   const cardId = req.params.cardId;
   getCardDataById(cardId).then((cardData) => {
     res.status(200).send({ cardData });
-  });
+  }).catch(next);
 };

@@ -33,8 +33,10 @@ exports.getCardDataById = (cardId) => {
   ]).then(([cardsData, templatesData]) => {
     const parsedCards = JSON.parse(cardsData);
     const parsedTemplates = JSON.parse(templatesData);
-
     const correctCard = parsedCards.find(card => card.id === convertNumToCardId(cardId));
+
+    if(!correctCard) return Promise.reject({status : 404, msg: 'Card ID does not exist'})
+
     const frontCoverTemplateId = correctCard.pages[0].templateId
     const imageUrl = parsedTemplates.find((card) => {
       return card.id === frontCoverTemplateId;
@@ -48,6 +50,5 @@ exports.getCardDataById = (cardId) => {
       pages : correctCard.pages,
       availableSizes : convertToCorrectSizeFormat(correctCard.sizes)
     }
-
-  });
+  })
 }

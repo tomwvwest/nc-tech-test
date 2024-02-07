@@ -84,4 +84,11 @@ describe("GET /cards/:cardId", () => {
       ],
     });
   });
+  test("404 - returns correct error message when given a cardId for a card that does not exist", async () => {
+    const response = await request(app).get("/cards/100");
+    const errMessage = response.body.msg
+
+    expect(response.status).toBe(404)
+    expect(errMessage).toBe('Card ID does not exist')
+  });
 });
