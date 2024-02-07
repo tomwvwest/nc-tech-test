@@ -27,6 +27,8 @@ exports.getCardsData = () => {
 };
 
 exports.getCardDataById = (cardId) => {
+  if(isNaN(cardId)) return Promise.reject({status : 400, msg: 'Invalid Card ID'})
+
   return Promise.all([
     fs.readFile(`${__dirname}/../data/cards.json`),
     fs.readFile(`${__dirname}/../data/templates.json`)

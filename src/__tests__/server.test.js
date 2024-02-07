@@ -1,7 +1,7 @@
 const request = require("supertest");
 const { app } = require("../server");
 
-xdescribe("GET /cards", () => {
+describe("GET /cards", () => {
   test("200 - returns an array of card objects with keys of title, imageURL and card_id", async () => {
     const response = await request(app).get("/cards");
     const { cardsData } = response.body;
@@ -90,5 +90,12 @@ describe("GET /cards/:cardId", () => {
 
     expect(response.status).toBe(404)
     expect(errMessage).toBe('Card ID does not exist')
+  });
+  test("400 - returns correct error message when given an invalid cardId", async () => {
+    const response = await request(app).get("/cards/invalid");
+    const errMessage = response.body.msg
+
+    expect(response.status).toBe(400)
+    expect(errMessage).toBe('Invalid Card ID')
   });
 });
