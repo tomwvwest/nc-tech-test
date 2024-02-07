@@ -1,4 +1,5 @@
 const fs = require("fs/promises");
+const { convertToCorrectSizeFormat, convertNumToCardId } = require("../../utils/functions");
 
 exports.getCardsData = () => {
   return Promise.all([
@@ -8,7 +9,7 @@ exports.getCardsData = () => {
     const parsedCards = JSON.parse(cardsData);
     const parsedTemplates = JSON.parse(templatesData);
 
-    const correctCardResponse = parsedCards.map((card) => {
+    const correctCardsResponse = parsedCards.map((card) => {
       const frontCoverTemplateId = card.pages[0].templateId;
       const imageUrl = parsedTemplates.find((card) => {
         return card.id === frontCoverTemplateId;
@@ -21,6 +22,32 @@ exports.getCardsData = () => {
       };
     });
 
-    return correctCardResponse;
+    return correctCardsResponse;
   });
 };
+
+exports.getCardDataById = (cardId) => {
+  return Promise.all([
+    fs.readFile(`${__dirname}/../data/cards.json`),
+    fs.readFile(`${__dirname}/../data/templates.json`)
+  ]).then(([cardsData, templatesData]) => {
+    const parsedCards = JSON.parse(cardsData);
+    const parsedTemplates = JSON.parse(templatesData);
+
+    const correctCard = parsedCards.find(card => card.id === convertNumToCardId(cardId));
+    const frontCoverTemplateId = correctCard.pages[0].templateId
+    const imageUrl = parsedTemplates.find((card) => {
+      return card.id === frontCoverTemplateId;
+    }).imageUrl;
+
+    return {
+      title : correctCard.title,
+      imageUrl,
+      card_id : correctCard.id,
+      base_price : correctCard.basePrice,
+      pages : correctCard.pages,
+      availableSizes : convertToCorrectSizeFormat(correctCard.sizes)
+    }
+
+  });
+}
