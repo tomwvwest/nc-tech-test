@@ -63,9 +63,18 @@ exports.getCardDataById = (cardId) => {
 };
 
 exports.postCardData = (cardData) => {
+  if (
+    typeof cardData.title !== "string" ||
+    typeof cardData.basePrice !== "number" ||
+    !Array.isArray(cardData.pages) ||
+    !Array.isArray(cardData.sizes)
+  ) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
   return Promise.all([fs.readFile(`${__dirname}/../data/cards.json`)]).then(
     ([cardsData]) => {
-      const parsedCardsData = JSON.parse(cardsData)
+      const parsedCardsData = JSON.parse(cardsData);
       const numOfCards = parsedCardsData.length;
       const idInt = numOfCards + 1;
       const newId = convertNumToCardId(idInt);
@@ -82,7 +91,7 @@ exports.postCardData = (cardData) => {
           JSON.stringify(newCardsData, null, 2)
         ),
       ]);
-      return this.getCardDataById(idInt)
+      return this.getCardDataById(idInt);
     }
-  )
+  );
 };

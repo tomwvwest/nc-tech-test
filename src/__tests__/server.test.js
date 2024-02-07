@@ -257,4 +257,136 @@ describe("POST a card", () => {
       ],
     });
   });
+  test("400 - returns correct error message when attempting to post with missing key", async () => {
+    const errCard = {
+      title: "example title",
+      basePrice: 200,
+      pages: [
+        {
+          title: "Front Cover",
+          templateId: "template001",
+        },
+        {
+          title: "Inside Left",
+          templateId: "template002",
+        },
+        {
+          title: "Inside Right",
+          templateId: "template003",
+        },
+        {
+          title: "Back Cover",
+          templateId: "template004",
+        },
+      ],
+    };
+    const response = await request(app).post("/cards").send(errCard);
+    const errMessage = response.body.msg;
+
+    expect(response.status).toBe(400);
+    expect(errMessage).toBe("Bad request");
+  });
+  test("400 - returns correct error message when attempting to post with wrong title data type", async () => {
+    const errCard = {
+      title: 1,
+      basePrice: 200,
+      sizes: ["sm", "md", "gt"],
+      pages: [
+        {
+          title: "Front Cover",
+          templateId: "template001",
+        },
+        {
+          title: "Inside Left",
+          templateId: "template002",
+        },
+        {
+          title: "Inside Right",
+          templateId: "template003",
+        },
+        {
+          title: "Back Cover",
+          templateId: "template004",
+        },
+      ],
+    };
+    const response = await request(app).post("/cards").send(errCard);
+    const errMessage = response.body.msg;
+
+    expect(response.status).toBe(400);
+    expect(errMessage).toBe("Bad request");
+  });
+  test("400 - returns correct error message when attempting to post with wrong basePrice data type", async () => {
+    const errCard = {
+      title: 'example title',
+      basePrice: 'wrong',
+      sizes: ["sm", "md", "gt"],
+      pages: [
+        {
+          title: "Front Cover",
+          templateId: "template001",
+        },
+        {
+          title: "Inside Left",
+          templateId: "template002",
+        },
+        {
+          title: "Inside Right",
+          templateId: "template003",
+        },
+        {
+          title: "Back Cover",
+          templateId: "template004",
+        },
+      ],
+    };
+    const response = await request(app).post("/cards").send(errCard);
+    const errMessage = response.body.msg;
+
+    expect(response.status).toBe(400);
+    expect(errMessage).toBe("Bad request");
+  });
+  test("400 - returns correct error message when attempting to post with wrong sizes data type", async () => {
+    const errCard = {
+      title: 'example title',
+      basePrice: 200,
+      sizes: 'wrong',
+      pages: [
+        {
+          title: "Front Cover",
+          templateId: "template001",
+        },
+        {
+          title: "Inside Left",
+          templateId: "template002",
+        },
+        {
+          title: "Inside Right",
+          templateId: "template003",
+        },
+        {
+          title: "Back Cover",
+          templateId: "template004",
+        },
+      ],
+    };
+    const response = await request(app).post("/cards").send(errCard);
+    const errMessage = response.body.msg;
+
+    expect(response.status).toBe(400);
+    expect(errMessage).toBe("Bad request");
+  });
+  test("400 - returns correct error message when attempting to post with wrong pages data type", async () => {
+    const errCard = {
+      title: 'example title',
+      basePrice: 200,
+      sizes: ["sm", "md", "gt"],
+      pages: 'wrong'
+    };
+    const response = await request(app).post("/cards").send(errCard);
+    const errMessage = response.body.msg;
+
+    expect(response.status).toBe(400);
+    expect(errMessage).toBe("Bad request");
+  });
 });
