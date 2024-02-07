@@ -1,7 +1,8 @@
 const {
   getCardsData,
   getCardDataById,
-  postCardData
+  postCardData,
+  deleteCardData
 } = require("../models/cards.model");
 
 exports.getCards = (req, res) => {
@@ -27,3 +28,10 @@ exports.postCard = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.deleteCard = (req, res, next) => {
+  const cardId = req.params.cardId;
+  deleteCardData(cardId).then(() => {
+    res.status(204).send()
+  }).catch(next)
+}

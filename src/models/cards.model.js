@@ -74,12 +74,12 @@ exports.postCardData = (cardData) => {
 
   return Promise.all([fs.readFile(`${__dirname}/../data/cards.json`)]).then(
     ([cardsData]) => {
-      const parsedCardsData = JSON.parse(cardsData);
-      const numOfCards = parsedCardsData.length;
+      const parsedCards = JSON.parse(cardsData);
+      const numOfCards = parsedCards.length;
       const idInt = numOfCards + 1;
       const newId = convertNumToCardId(idInt);
       const newCard = { ...cardData, id: newId };
-      const newCardsData = [...parsedCardsData, newCard];
+      const newCardsData = [...parsedCards, newCard];
 
       Promise.all([
         fs.writeFile(
@@ -94,4 +94,26 @@ exports.postCardData = (cardData) => {
       return this.getCardDataById(idInt);
     }
   );
+};
+
+exports.deleteCardData = (cardId) => {
+  return fs.readFile(`${__dirname}/../data/cards.json`).then((cardsData) => {
+    const parsedCardsData = JSON.parse(cardsData);
+    const indexOfCard = parsedCardsData.findIndex(
+      (card) => card.id === convertNumToCardId(cardId)
+    );
+
+    parsedCardsData.splice(indexOfCard, 1);
+
+    return Promise.all([
+      fs.writeFile(
+        `${__dirname}/../data/cards.json`,
+        JSON.stringify(parsedCardsData, null, 2)
+      ),
+      fs.writeFile(
+        `${__dirname}/../data/sizes.json`,
+        JSON.stringify(parsedCardsData, null, 2)
+      ),
+    ]);
+  });
 };

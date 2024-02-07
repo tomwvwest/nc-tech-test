@@ -2,7 +2,7 @@ const request = require("supertest");
 const { app } = require("../server");
 const fs = require("fs/promises");
 
-//reset test data after all tests are ran
+// reset test data after all tests are ran
 afterAll(() => {
   const originalData = [
     {
@@ -318,8 +318,8 @@ describe("POST a card", () => {
   });
   test("400 - returns correct error message when attempting to post with wrong basePrice data type", async () => {
     const errCard = {
-      title: 'example title',
-      basePrice: 'wrong',
+      title: "example title",
+      basePrice: "wrong",
       sizes: ["sm", "md", "gt"],
       pages: [
         {
@@ -348,9 +348,9 @@ describe("POST a card", () => {
   });
   test("400 - returns correct error message when attempting to post with wrong sizes data type", async () => {
     const errCard = {
-      title: 'example title',
+      title: "example title",
       basePrice: 200,
-      sizes: 'wrong',
+      sizes: "wrong",
       pages: [
         {
           title: "Front Cover",
@@ -378,15 +378,39 @@ describe("POST a card", () => {
   });
   test("400 - returns correct error message when attempting to post with wrong pages data type", async () => {
     const errCard = {
-      title: 'example title',
+      title: "example title",
       basePrice: 200,
       sizes: ["sm", "md", "gt"],
-      pages: 'wrong'
+      pages: "wrong",
     };
     const response = await request(app).post("/cards").send(errCard);
     const errMessage = response.body.msg;
 
     expect(response.status).toBe(400);
     expect(errMessage).toBe("Bad request");
+  });
+});
+
+describe("DELETE /cards/:cardId", () => {
+  test("204 - successfully deletes chosen card from database", async () => {
+    const response = await request(app).delete("/cards/1");
+    expect(response.status).toBe(204);
+
+    const [cardsData, sizesData] = await Promise.all([
+      fs.readFile(`${__dirname}/../data/cards.json`),
+      fs.readFile(`${__dirname}/../data/sizes.json`),
+    ]);
+    const parsedCardsData = JSON.parse(cardsData);
+    const parsedSizesData = JSON.parse(sizesData);
+
+    const existsInCards = parsedCardsData.find(
+      (card) => card.id === "card001"
+    );
+    const existsInSizes = parsedSizesData.find(
+      (card) => card.id === "card001"
+    );
+
+    expect(existsInCards).toBe(undefined);
+    expect(existsInSizes).toBe(undefined);
   });
 });
